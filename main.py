@@ -16,6 +16,7 @@ print(data.head())
 print(data.info())
 print(data.isnull().sum())
 
+
 # распределение
 # NOX
 # NoX_count = [0, 0, 0]
@@ -90,16 +91,23 @@ print(data.isnull().sum())
 # plt.xticks(range(len(Tcore_groups)),Tcore_groups)
 # plt.show()
 
-xs = data['Nox, мг/м3']
-ys = data['Температура исходного воздуха, К']
-pd.DataFrame(np.array([xs, ys]).T).plot.scatter(0, 1, grid=True)
-plt.xlabel('Nox')
-plt.ylabel('Температура')
-plt.show()
+def correlation(param1, param2):
+    """
+    Кореляция зависимоти одного параметра от другого
+    :param param1: первый параметр кореляции
+    :param param2: второй параметр кореляции
+    :return: график кореляции
+    """
+    xs = data[param1]
+    ys = data[param2]
+    pd.DataFrame(np.array([xs, ys]).T).plot.scatter(0, 1, grid=True)
+    plt.xlabel(param1)
+    plt.ylabel(param2)
+    plt.show()
 
-xs = data['Nox, мг/м3']
-ys = data['Нагрузка, т/ч']
-pd.DataFrame(np.array([xs, ys]).T).plot.scatter(0, 1, grid=True)
-plt.xlabel('Nox')
-plt.ylabel('Нагрузка, т/ч')
-plt.show()
+
+correlation('Nox, мг/м3', 'Нагрузка, т/ч')
+correlation('Nox, мг/м3', 'Температура исходного воздуха, К')
+
+correlation('CO, мг/м3', 'Нагрузка, т/ч')
+correlation('CO, мг/м3', 'Температура исходного воздуха, К')
