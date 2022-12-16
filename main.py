@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from catboost import CatBoostClassifier
+from sklearn.model_selection import train_test_split
 
 data = pd.read_csv('book.csv', delimiter=';', decimal=',')
 
@@ -106,8 +108,38 @@ def correlation(param1, param2):
     plt.show()
 
 
-correlation('Nox, мг/м3', 'Нагрузка, т/ч')
-correlation('Nox, мг/м3', 'Температура исходного воздуха, К')
+# correlation('Nox, мг/м3', 'Нагрузка, т/ч')
+# correlation('Nox, мг/м3', 'Температура исходного воздуха, К')
+#
+# correlation('CO, мг/м3', 'Нагрузка, т/ч')
+# correlation('CO, мг/м3', 'Температура исходного воздуха, К')
 
-correlation('CO, мг/м3', 'Нагрузка, т/ч')
-correlation('CO, мг/м3', 'Температура исходного воздуха, К')
+data = data.drop(['CO, мг/м3', 'Тух, К', 'Тядра, K'], axis=1)
+x = data.drop('Nox, мг/м3', axis=1)
+y = data['Nox, мг/м3']
+
+#y.loc[y['Nox, мг/м3'] < 125,'Nox, мг/м3'] = 0
+
+
+for i in range(len(y)):
+    if y[i] < 125:
+        y[i] = 0
+    if 290 >= y[i] >= 125:
+        y[i] = 1
+    if y[i] > 290:
+        y[i] = 2
+
+X_train, X_valid, y_train, y_valid = train_test_split(x, y, test_size=0.25)
+
+model = CatBoostClassifier(iterations=1500,
+                           learning_rate=0.1,
+                           depth=2,
+                           loss_function='MultiClass')
+
+model.fit(X_train, y_train)
+
+preds_class = model.predict(X_valid)
+preds_proba = model.predict_proba(X_valid)
+print("class = ", preds_class)
+print(y_valid)
+print("proba = ", preds_proba)
