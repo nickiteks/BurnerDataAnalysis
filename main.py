@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from catboost import CatBoostClassifier
 from sklearn.model_selection import train_test_split
+from xgboost import XGBClassifier
 
 data = pd.read_csv('book.csv', delimiter=';', decimal=',')
 
@@ -131,15 +132,24 @@ for i in range(len(y)):
 
 X_train, X_valid, y_train, y_valid = train_test_split(x, y, test_size=0.25)
 
-model = CatBoostClassifier(iterations=1500,
-                           learning_rate=0.1,
-                           depth=2,
-                           loss_function='MultiClass')
+# model = CatBoostClassifier(iterations=1500,
+#                            learning_rate=0.1,
+#                            depth=2,
+#                            loss_function='MultiClass')
+#
+# model.fit(X_train, y_train)
+#
+# preds_class = model.predict(X_valid)
+# preds_proba = model.predict_proba(X_valid)
+# print("class = ", preds_class)
+# print(y_valid)
+# print("proba = ", preds_proba)
 
-model.fit(X_train, y_train)
+bst = XGBClassifier(n_estimators=2, max_depth=2, learning_rate=1, objective='binary:logistic')
+# fit model
+bst.fit(X_train, y_train)
+# make predictions
+preds = bst.predict(X_valid)
 
-preds_class = model.predict(X_valid)
-preds_proba = model.predict_proba(X_valid)
-print("class = ", preds_class)
+print("class = ", preds)
 print(y_valid)
-print("proba = ", preds_proba)
