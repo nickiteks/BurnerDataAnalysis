@@ -2,9 +2,14 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from catboost import CatBoostClassifier
+from catboost import CatBoostClassifier, Pool, CatBoostRegressor
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
+from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
 
 data = pd.read_csv('book.csv', delimiter=';', decimal=',')
 
@@ -124,14 +129,17 @@ y = data['Nox, мг/м3']
 
 for i in range(len(y)):
     if y[i] < 125:
-        y[i] = 0
+        y[i] = int(0)
     if 290 >= y[i] >= 125:
-        y[i] = 1
+        y[i] = int(1)
     if y[i] > 290:
-        y[i] = 2
+        y[i] = int(2)
 
 X_train, X_valid, y_train, y_valid = train_test_split(x, y, test_size=0.25)
-
+# le = LabelEncoder()
+# y_train = le.fit_transform(y_train)
+# y_valid = le.fit_transform(y_valid)
+#
 # model = CatBoostClassifier(iterations=1500,
 #                            learning_rate=0.1,
 #                            depth=2,
@@ -144,12 +152,40 @@ X_train, X_valid, y_train, y_valid = train_test_split(x, y, test_size=0.25)
 # print("class = ", preds_class)
 # print(y_valid)
 # print("proba = ", preds_proba)
+# print(accuracy_score(y_valid,preds_class))
+#
+# bst = XGBClassifier(n_estimators=2, max_depth=2, learning_rate=1, objective='binary:logistic')
+# # fit model
+# bst.fit(X_train, y_train)
+# # make predictions
+# preds = bst.predict(X_valid)
+#
+# print("class = ", preds)
+# print(y_valid)
+#
+# print(accuracy_score(y_valid,preds))
+#
+# clf = RandomForestClassifier(max_depth=2, random_state=0)
+# clf.fit(X_train, y_train)
+#
+# pred = clf.predict(X_valid)
+# print(accuracy_score(y_valid,pred))
 
-bst = XGBClassifier(n_estimators=2, max_depth=2, learning_rate=1, objective='binary:logistic')
-# fit model
-bst.fit(X_train, y_train)
-# make predictions
-preds = bst.predict(X_valid)
+train_dataset = Pool(X_train, y_train)
+test_dataset = Pool(X_valid, y_valid)
 
-print("class = ", preds)
-print(y_valid)
+model = CatBoostRegressor(loss_function='RMSE')
+
+grid = {'iterations': [100, 150, 200],
+        'learning_rate': [0.03, 0.1],
+        'depth': [2, 4, 6, 8],
+        'l2_leaf_reg': [0.2, 0.5, 1, 3]}
+model.grid_search(grid, train_dataset)
+
+pred = model.predict(X_valid)
+rmse = (np.sqrt(mean_squared_error(y_valid, pred)))
+r2 = r2_score(y_valid, pred)
+
+print(rmse)
+print(r2)
+
