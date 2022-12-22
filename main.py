@@ -124,8 +124,13 @@ def correlation(param1, param2):
 data = data.drop(['CO, мг/м3', 'Тух, К', 'Тядра, K'], axis=1)
 x = data.drop('Nox, мг/м3', axis=1)
 y = data['Nox, мг/м3']
+# standard scaler
 # scaler = preprocessing.StandardScaler().fit(x)
 # x = scaler.transform(x)
+#minMax scaler
+x = np.array(x)
+min_max_scaler = preprocessing.MinMaxScaler()
+x = min_max_scaler.fit_transform(x)
 print(x)
 
 #y.loc[y['Nox, мг/м3'] < 125,'Nox, мг/м3'] = 0
@@ -157,6 +162,7 @@ print("class = ", preds_class)
 print(y_valid)
 print("proba = ", preds_proba)
 print(accuracy_score(y_valid,preds_class))
+
 # #
 # bst = XGBClassifier(n_estimators=2, max_depth=2, learning_rate=1, objective='binary:logistic')#change
 # # fit model
