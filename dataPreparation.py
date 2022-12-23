@@ -119,3 +119,15 @@ class DataPreparation:
                 y[i] = int(2)
 
         return y
+
+    def robust_scaler(self, x):
+        x = np.array(x)
+        robust_scaler = preprocessing.RobustScaler()
+        x = robust_scaler.fit_transform(x)
+        return x
+
+    def quantile_transform(self, x):
+        x = np.array(x)
+        quantile_transformer = preprocessing.QuantileTransformer()
+        x = quantile_transformer.fit_transform(x)
+        return x

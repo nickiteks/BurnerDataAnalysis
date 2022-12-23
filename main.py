@@ -32,6 +32,9 @@ data = preparation.delete_columns(['O2, %',
 print(data.head())
 print(data.info())
 print(data.isnull().sum())
+sns.set()
+ax = sns.heatmap(data.corr(),annot=True,fmt='.1g')
+plt.show()
 
 # распределение
 # NOX
@@ -56,7 +59,11 @@ y = data['Nox, мг/м3']
 # standard scaler
 # x = preparation.standard_scaler(x)
 # # minMax scaler
-x = preparation.min_max_scaler(x)
+# x = preparation.min_max_scaler(x)
+# robust scaler
+# x = preprocessing.robust_scale(x)
+# quantile
+x = preprocessing.quantile_transform(x)
 
 y = preparation.nox_to_classes(y)
 
@@ -64,38 +71,39 @@ accuracy_cat = []
 accuracy_xg = []
 accuracy_rf = []
 
-for i in range(50):
-    try:
-        X_train, X_valid, y_train, y_valid = train_test_split(x, y, test_size=0.25)
+# for i in range(50):
+#     try:
+#         X_train, X_valid, y_train, y_valid = train_test_split(x, y, test_size=0.25)
+#
+#         models = Models()
+#
+#         accuracy_xg.append(models.xg_boost_classifer(X_train, X_valid, y_train, y_valid))
+#
+#         accuracy_cat.append(models.cat_boost_classifier(X_train, X_valid, y_train, y_valid))
+#
+#         accuracy_rf.append(models.random_forest_classifer(X_train, X_valid, y_train, y_valid))
+#     except:
+#         pass
+#
+# x_label = [i for i in range(len(accuracy_xg))]
 
-        models = Models()
-
-        accuracy_xg.append(models.xg_boost_classifer(X_train, X_valid, y_train, y_valid))
-
-        accuracy_cat.append(models.cat_boost_classifier(X_train, X_valid, y_train, y_valid))
-
-        accuracy_rf.append(models.random_forest_classifer(X_train, X_valid, y_train, y_valid))
-    except:
-        pass
-
-x_label = [i for i in range(len(accuracy_xg))]
-
-
-fig, ax = plt.subplots()
-cat_patch = mpatches.Patch(color='y', label='CatBoost')
-xg_patch = mpatches.Patch(color='b', label='XGBoost')
-rf_patch = mpatches.Patch(color='g', label='Random Forest')
-ax.legend(handles=[cat_patch,xg_patch,rf_patch])
-
-plt.title('Accuracy')
-plt.ylabel('accuracy score')
-plt.xlabel('experiment number')
-
-plt.plot(x_label, accuracy_cat, color='y')
-plt.plot(x_label, accuracy_xg, color='b')
-plt.plot(x_label, accuracy_rf, color='g')
-
-plt.show()
+#
+# fig, ax = plt.subplots()
+# cat_patch = mpatches.Patch(color='y', label='CatBoost')
+# xg_patch = mpatches.Patch(color='b', label='XGBoost')
+# rf_patch = mpatches.Patch(color='g', label='Random Forest')
+# ax.legend(handles=[cat_patch,xg_patch,rf_patch])
+#
+# plt.title('Accuracy')
+# plt.ylabel('accuracy score')
+# plt.xlabel('experiment number')
+# plt.grid(True)
+#
+# plt.plot(x_label, accuracy_cat, color='y')
+# plt.plot(x_label, accuracy_xg, color='b')
+# plt.plot(x_label, accuracy_rf, color='g')
+#
+# plt.show()
 
 # train_dataset = Pool(X_train, y_train)
 # test_dataset = Pool(X_valid, y_valid)
