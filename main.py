@@ -1,6 +1,11 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+
+from dataPreparation import DataPreparation
+from models import Models
+
 import seaborn as sns
 from catboost import CatBoostClassifier, Pool, CatBoostRegressor
 from sklearn import preprocessing
@@ -16,170 +21,81 @@ data = pd.read_csv('book.csv', delimiter=';', decimal=',')
 
 # очистка данных
 
-data = data.drop('O2, %', axis=1)
-data = data.drop('Тип амбразуры', axis=1)
-data = data.drop('Модель горения', axis=1)
-data = data.drop('Модель турбулентности', axis=1)
+preparation = DataPreparation()
+
+data = preparation.delete_columns(['O2, %',
+                                   'Тип амбразуры',
+                                   'Модель горения',
+                                   'Модель турбулентности'],
+                                  data)
 
 print(data.head())
 print(data.info())
 print(data.isnull().sum())
 
-
 # распределение
 # NOX
-# NoX_count = [0, 0, 0]
-# NoX_groups =['<125','125-290','`>290']
-#
-# for i in range(len(data['Nox, мг/м3'])):
-#     if data['Nox, мг/м3'][i] < 125:
-#         NoX_count[0] = NoX_count[0] + 1
-#     if 125 <= data['Nox, мг/м3'][i] <= 290:
-#         NoX_count[1] = NoX_count[1] + 1
-#     if data['Nox, мг/м3'][i] > 290:
-#         NoX_count[2] = NoX_count[2] + 1
-#
-#
-# plt.bar(range(len(NoX_groups)),NoX_count)
-# plt.title('Распределение NoX')
-# plt.ylabel('Количество значений')
-# plt.xticks(range(len(NoX_groups)),NoX_groups)
-# plt.show()
-# #
-# #CO
-# CO_count = [0, 0, 0]
-# CO_groups =['<100','100-300','>300']
-#
-# for i in range(len(data['CO, мг/м3'])):
-#     if data['CO, мг/м3'][i] < 100:
-#         CO_count[0] = CO_count[0] + 1
-#     if 100 <= data['CO, мг/м3'][i] <= 300:
-#         CO_count[1] = CO_count[1] + 1
-#     if data['CO, мг/м3'][i] > 300:
-#         CO_count[2] = CO_count[2] + 1
-#
-# plt.bar(range(len(CO_groups)),CO_count)
-# plt.title('Распределение CO')
-# plt.ylabel('Количество значений')
-# plt.xticks(range(len(CO_groups)),CO_groups)
-# plt.show()
-#
-# #Tyx
-# Tyx_count = [0, 0, 0]
-# Tyx_groups =['343-381','381-393','>393']
-#
-# for i in range(len(data['Тух, К'])):
-#     if 343 <= data['Тух, К'][i] < 381:
-#         Tyx_count[0] = Tyx_count[0] + 1
-#     if 381 <= data['Тух, К'][i] <= 393:
-#         Tyx_count[1] = Tyx_count[1] + 1
-#     if data['Тух, К'][i] > 393:
-#         Tyx_count[2] = Tyx_count[2] + 1
-#
-# plt.bar(range(len(Tyx_groups)),Tyx_count)
-# plt.title('Распределение Tyx')
-# plt.ylabel('Количество значений')
-# plt.xticks(range(len(Tyx_groups)),Tyx_groups)
-# plt.show()
-#
-# #Tcore
-# Tcore_count = [0, 0, 0]
-# Tcore_groups =['1600-1700','1700-2100','>2100']
-#
-# for i in range(len(data['Тядра, K'])):
-#     if 1600 <= data['Тядра, K'][i] < 1700:
-#         Tcore_count[0] = Tcore_count[0] + 1
-#     if 1700 <= data['Тядра, K'][i] <= 2100:
-#         Tcore_count[1] = Tcore_count[1] + 1
-#     if data['Тядра, K'][i] > 2100:
-#         Tcore_count[2] = Tcore_count[2] + 1
-#
-# plt.bar(range(len(Tcore_groups)),Tcore_count)
-# plt.title('Распределение Tядра')
-# plt.ylabel('Количество значений')
-# plt.xticks(range(len(Tcore_groups)),Tcore_groups)
-# plt.show()
-
-def correlation(param1, param2):
-    """
-    Кореляция зависимоти одного параметра от другого
-    :param param1: первый параметр кореляции
-    :param param2: второй параметр кореляции
-    :return: график кореляции
-    """
-    xs = data[param1]
-    ys = data[param2]
-    pd.DataFrame(np.array([xs, ys]).T).plot.scatter(0, 1, grid=True)
-    plt.xlabel(param1)
-    plt.ylabel(param2)
-    plt.show()
+# preparation.nox_distribution(data)
+# # CO
+# preparation.co_distribution(data)
+# # Tyx
+# preparation.tyx_distribution(data)
+# # Tcore
+# preparation.tcore_distribution(data)
 
 
-# correlation('Nox, мг/м3', 'Нагрузка, т/ч')
-# correlation('Nox, мг/м3', 'Температура исходного воздуха, К')
+# preparation.correlation('Nox, мг/м3', 'Нагрузка, т/ч',data)
+# preparation.correlation('Nox, мг/м3', 'Температура исходного воздуха, К',data)
 #
-# correlation('CO, мг/м3', 'Нагрузка, т/ч')
-# correlation('CO, мг/м3', 'Температура исходного воздуха, К')
-
+# preparation.correlation('CO, мг/м3', 'Нагрузка, т/ч',data)
+# preparation.correlation('CO, мг/м3', 'Температура исходного воздуха, К',data)
+#
 data = data.drop(['CO, мг/м3', 'Тух, К', 'Тядра, K'], axis=1)
 x = data.drop('Nox, мг/м3', axis=1)
 y = data['Nox, мг/м3']
 # standard scaler
-# scaler = preprocessing.StandardScaler().fit(x)
-# x = scaler.transform(x)
-#minMax scaler
-x = np.array(x)
-min_max_scaler = preprocessing.MinMaxScaler()
-x = min_max_scaler.fit_transform(x)
-print(x)
+# x = preparation.standard_scaler(x)
+# # minMax scaler
+x = preparation.min_max_scaler(x)
 
-#y.loc[y['Nox, мг/м3'] < 125,'Nox, мг/м3'] = 0
+y = preparation.nox_to_classes(y)
+
+accuracy_cat = []
+accuracy_xg = []
+accuracy_rf = []
+
+for i in range(50):
+    try:
+        X_train, X_valid, y_train, y_valid = train_test_split(x, y, test_size=0.25)
+
+        models = Models()
+
+        accuracy_xg.append(models.xg_boost_classifer(X_train, X_valid, y_train, y_valid))
+
+        accuracy_cat.append(models.cat_boost_classifier(X_train, X_valid, y_train, y_valid))
+
+        accuracy_rf.append(models.random_forest_classifer(X_train, X_valid, y_train, y_valid))
+    except:
+        pass
+
+x_label = [i for i in range(len(accuracy_xg))]
 
 
-for i in range(len(y)):
-    if y[i] < 125:
-        y[i] = int(0)
-    if 290 >= y[i] >= 125:
-        y[i] = int(1)
-    if y[i] > 290:
-        y[i] = int(2)
+fig, ax = plt.subplots()
+cat_patch = mpatches.Patch(color='y', label='CatBoost')
+xg_patch = mpatches.Patch(color='b', label='XGBoost')
+rf_patch = mpatches.Patch(color='g', label='Random Forest')
+ax.legend(handles=[cat_patch,xg_patch,rf_patch])
 
-X_train, X_valid, y_train, y_valid = train_test_split(x, y, test_size=0.25,random_state=42)
-# le = LabelEncoder()
-# y_train = le.fit_transform(y_train)
-# y_valid = le.fit_transform(y_valid)
-#
-model = CatBoostClassifier(iterations=1500,
-                           learning_rate=0.1,
-                           depth=2,
-                           loss_function='MultiClass')
+plt.title('Accuracy')
+plt.ylabel('accuracy score')
+plt.xlabel('experiment number')
 
-model.fit(X_train, y_train)
+plt.plot(x_label, accuracy_cat, color='y')
+plt.plot(x_label, accuracy_xg, color='b')
+plt.plot(x_label, accuracy_rf, color='g')
 
-preds_class = model.predict(X_valid)
-preds_proba = model.predict_proba(X_valid)
-print("class = ", preds_class)
-print(y_valid)
-print("proba = ", preds_proba)
-print(accuracy_score(y_valid,preds_class))
-
-# #
-# bst = XGBClassifier(n_estimators=2, max_depth=2, learning_rate=1, objective='binary:logistic')#change
-# # fit model
-# bst.fit(X_train, y_train)
-# # make predictions
-# preds = bst.predict(X_valid)
-#
-# print("class = ", preds)
-# print(y_valid)
-# #
-# print(accuracy_score(y_valid,preds))
-# #
-# clf = RandomForestClassifier(max_depth=2, random_state=0)
-# clf.fit(X_train, y_train)
-#
-# pred = clf.predict(X_valid)
-# print(accuracy_score(y_valid,pred))
+plt.show()
 
 # train_dataset = Pool(X_train, y_train)
 # test_dataset = Pool(X_valid, y_valid)
@@ -198,4 +114,3 @@ print(accuracy_score(y_valid,preds_class))
 #
 # print(rmse)
 # print(r2)
-
