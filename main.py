@@ -2,15 +2,20 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+from sklearn.tree._criterion import MSE
 
 from dataPreparation import DataPreparation
 from models import Models
 
 import seaborn as sns
-from catboost import CatBoostClassifier, Pool, CatBoostRegressor
+from catboost import CatBoostClassifier
+from catboost import Pool
+from catboost import CatBoostRegressor
 from sklearn import preprocessing
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
+from xgboost import XGBRegressor
 from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelEncoder
@@ -22,6 +27,7 @@ data = pd.read_csv('book.csv', delimiter=';', decimal=',')
 # очистка данных
 
 preparation = DataPreparation()
+models = Models()
 
 data = preparation.delete_columns(['O2, %',
                                    'Тип амбразуры',
@@ -32,9 +38,9 @@ data = preparation.delete_columns(['O2, %',
 print(data.head())
 print(data.info())
 print(data.isnull().sum())
-sns.set()
-ax = sns.heatmap(data.corr(),annot=True,fmt='.1g')
-plt.show()
+# sns.set()
+# ax = sns.heatmap(data.corr(),annot=True,fmt='.1g')
+# plt.show()
 
 # распределение
 # NOX
@@ -66,7 +72,7 @@ y = data['Nox, мг/м3']
 x = preprocessing.quantile_transform(x)
 
 y = preparation.nox_to_classes(y)
-
+# classification
 accuracy_cat = []
 accuracy_xg = []
 accuracy_rf = []
@@ -75,7 +81,6 @@ accuracy_rf = []
 #     try:
 #         X_train, X_valid, y_train, y_valid = train_test_split(x, y, test_size=0.25)
 #
-#         models = Models()
 #
 #         accuracy_xg.append(models.xg_boost_classifer(X_train, X_valid, y_train, y_valid))
 #
@@ -105,20 +110,12 @@ accuracy_rf = []
 #
 # plt.show()
 
-# train_dataset = Pool(X_train, y_train)
-# test_dataset = Pool(X_valid, y_valid)
-#
-# model = CatBoostRegressor(loss_function='RMSE')
-#
-# grid = {'iterations': [100, 150, 200],
-#         'learning_rate': [0.03, 0.1],
-#         'depth': [2, 4, 6, 8],
-#         'l2_leaf_reg': [0.2, 0.5, 1, 3]}
-# model.grid_search(grid, train_dataset)
-#
-# pred = model.predict(X_valid)
-# rmse = (np.sqrt(mean_squared_error(y_valid, pred)))
-# r2 = r2_score(y_valid, pred)
-#
-# print(rmse)
-# print(r2)
+X_train, X_valid, y_train, y_valid = train_test_split(x, y, test_size=0.25)
+
+# regression
+
+models.cat_boost_regression(X_train, X_valid, y_train, y_valid)
+
+models.xg_boost_regression(X_train, X_valid, y_train, y_valid)
+
+models.random_forest_regression(X_train, X_valid, y_train, y_valid)
