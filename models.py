@@ -72,7 +72,7 @@ class Models:
         r2 = r2_score(y_valid, pred)
 
         print("RMSE : % f" % (rmse))
-        print(r2)
+        print("R2 : % f" % (r2))
 
     def xg_boost_regression(self,X_train, X_valid, y_train, y_valid):
         """
@@ -89,7 +89,10 @@ class Models:
 
         # RMSE Computation
         rmse = np.sqrt(mean_squared_error(y_valid, pred))
+        r2 = r2_score(y_valid, pred)
+
         print("RMSE : % f" % (rmse))
+        print("R2 : % f" % (r2))
 
     def random_forest_regression(self,X_train, X_valid, y_train, y_valid):
         """
@@ -99,13 +102,68 @@ class Models:
         regressor.fit(X_train, y_train)
         pred = regressor.predict(X_valid)
         rmse = np.sqrt(mean_squared_error(y_valid, pred))
+        r2 = r2_score(y_valid, pred)
+
         print("RMSE : % f" % (rmse))
+        print("R2 : % f" % (r2))
 
     def cat_boost_ROC(self,X_train, X_valid, y_train, y_valid):
         model = CatBoostClassifier(iterations=1500,
                                    learning_rate=0.1,
                                    depth=2,
                                    loss_function='MultiClass')
+        model.fit(X_train, y_train)
+        pred = model.predict_proba(X_valid)
+
+        y_valid = label_binarize(y_valid, classes=[0, 1, 2])
+
+        fpr = dict()
+        tpr = dict()
+        roc_auc = dict()
+        for i in range(3):
+            fpr[i], tpr[i], _ = roc_curve(y_valid[:, i], pred[:, i])
+            roc_auc[i] = auc(fpr[i], tpr[i])
+
+        plt.figure()
+        for i in range(3):
+            plt.plot(fpr[i], tpr[i], label='ROC curve (area = %0.2f)' % roc_auc[i])
+        plt.plot([0, 1], [0, 1], 'k--')
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.05])
+        plt.xlabel('False Positive Rate')
+        plt.ylabel('True Positive Rate')
+        plt.title('Receiver operating characteristic example')
+        plt.legend(loc="lower right")
+        plt.show()
+
+    def xg_boost_ROC(self,X_train, X_valid, y_train, y_valid):
+        model = XGBClassifier(n_estimators=2, max_depth=2, learning_rate=1, objective='multi:softprob')
+        model.fit(X_train, y_train)
+        pred = model.predict_proba(X_valid)
+
+        y_valid = label_binarize(y_valid, classes=[0, 1, 2])
+
+        fpr = dict()
+        tpr = dict()
+        roc_auc = dict()
+        for i in range(3):
+            fpr[i], tpr[i], _ = roc_curve(y_valid[:, i], pred[:, i])
+            roc_auc[i] = auc(fpr[i], tpr[i])
+
+        plt.figure()
+        for i in range(3):
+            plt.plot(fpr[i], tpr[i], label='ROC curve (area = %0.2f)' % roc_auc[i])
+        plt.plot([0, 1], [0, 1], 'k--')
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.05])
+        plt.xlabel('False Positive Rate')
+        plt.ylabel('True Positive Rate')
+        plt.title('Receiver operating characteristic example')
+        plt.legend(loc="lower right")
+        plt.show()
+
+    def random_forest_ROC(self,X_train, X_valid, y_train, y_valid):
+        model = RandomForestClassifier(max_depth=2, random_state=0)
         model.fit(X_train, y_train)
         pred = model.predict_proba(X_valid)
 

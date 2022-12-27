@@ -33,15 +33,16 @@ models = Models()
 data = preparation.delete_columns(['O2, %',
                                    'Тип амбразуры',
                                    'Модель горения',
-                                   'Модель турбулентности'],
+                                   'Модель турбулентности',
+                                   'Параметр'],
                                   data)
 
 print(data.head())
 print(data.info())
 print(data.isnull().sum())
-# sns.set()
-# ax = sns.heatmap(data.corr(),annot=True,fmt='.1g')# выходные параметры
-# plt.show()
+sns.set()
+ax = sns.heatmap(data.corr(),annot=True,fmt='.1f')
+plt.show()
 
 # распределение
 # NOX
@@ -74,8 +75,8 @@ x = preparation.min_max_scaler(x)
 
 y = preparation.nox_to_classes(y)
 
-X_train, X_valid, y_train, y_valid = train_test_split(x, y, test_size=0.25)
-models.cat_boost_ROC(X_train, X_valid, y_train, y_valid)
+# X_train, X_valid, y_train, y_valid = train_test_split(x, y, test_size=0.25)
+# models.cat_boost_ROC(X_train, X_valid, y_train, y_valid)
 
 # classification
 # accuracy_cat = []
