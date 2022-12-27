@@ -1,6 +1,9 @@
 from catboost import CatBoostClassifier
+from matplotlib import pyplot as plt
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, roc_curve, auc
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import label_binarize
 from xgboost import XGBClassifier
 from xgboost import XGBRegressor
 from catboost import Pool
@@ -97,3 +100,32 @@ class Models:
         pred = regressor.predict(X_valid)
         rmse = np.sqrt(mean_squared_error(y_valid, pred))
         print("RMSE : % f" % (rmse))
+
+    def cat_boost_ROC(self,X_train, X_valid, y_train, y_valid):
+        model = CatBoostClassifier(iterations=1500,
+                                   learning_rate=0.1,
+                                   depth=2,
+                                   loss_function='MultiClass')
+        model.fit(X_train, y_train)
+        pred = model.predict_proba(X_valid)
+
+        y_valid = label_binarize(y_valid, classes=[0, 1, 2])
+
+        fpr = dict()
+        tpr = dict()
+        roc_auc = dict()
+        for i in range(3):
+            fpr[i], tpr[i], _ = roc_curve(y_valid[:, i], pred[:, i])
+            roc_auc[i] = auc(fpr[i], tpr[i])
+
+        plt.figure()
+        for i in range(3):
+            plt.plot(fpr[i], tpr[i], label='ROC curve (area = %0.2f)' % roc_auc[i])
+        plt.plot([0, 1], [0, 1], 'k--')
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.05])
+        plt.xlabel('False Positive Rate')
+        plt.ylabel('True Positive Rate')
+        plt.title('Receiver operating characteristic example')
+        plt.legend(loc="lower right")
+        plt.show()

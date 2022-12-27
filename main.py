@@ -75,34 +75,7 @@ x = preparation.min_max_scaler(x)
 y = preparation.nox_to_classes(y)
 
 X_train, X_valid, y_train, y_valid = train_test_split(x, y, test_size=0.25)
-
-model = CatBoostClassifier(iterations=1500,
-                                   learning_rate=0.1,
-                                   depth=2,
-                                   loss_function='MultiClass')
-model.fit(X_train, y_train)
-pred = model.predict_proba(X_valid)
-
-y_valid = label_binarize(y_valid, classes=[0,1,2])
-
-fpr = dict()
-tpr = dict()
-roc_auc = dict()
-for i in range(3):
-    fpr[i], tpr[i], _ = roc_curve(y_valid[:,i], pred[:, i])
-    roc_auc[i] = auc(fpr[i], tpr[i])
-
-plt.figure()
-for i in range(3):
-    plt.plot(fpr[i], tpr[i], label='ROC curve (area = %0.2f)' % roc_auc[i])
-plt.plot([0, 1], [0, 1], 'k--')
-plt.xlim([0.0, 1.0])
-plt.ylim([0.0, 1.05])
-plt.xlabel('False Positive Rate')
-plt.ylabel('True Positive Rate')
-plt.title('Receiver operating characteristic example')
-plt.legend(loc="lower right")
-plt.show()
+models.cat_boost_ROC(X_train, X_valid, y_train, y_valid)
 
 # classification
 # accuracy_cat = []
