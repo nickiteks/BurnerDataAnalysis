@@ -11,6 +11,7 @@ from catboost import CatBoostRegressor
 import numpy as np
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
+import shap
 
 
 class Models:
@@ -71,6 +72,16 @@ class Models:
         rmse = (np.sqrt(mean_squared_error(y_valid, pred)))
         r2 = r2_score(y_valid, pred)
 
+        # график важности параметров
+
+        feature_importance = model.feature_importances_
+        sorted_idx = np.argsort(feature_importance)
+        fig = plt.figure(figsize=(12, 6))
+        plt.barh(range(len(sorted_idx)), feature_importance[sorted_idx], align='center')
+        plt.yticks(range(len(sorted_idx)), np.array(X_valid.columns)[sorted_idx])
+        plt.title('Feature Importance')
+        plt.show()
+
         print("RMSE : % f" % (rmse))
         print("R2 : % f" % (r2))
 
@@ -91,6 +102,16 @@ class Models:
         rmse = np.sqrt(mean_squared_error(y_valid, pred))
         r2 = r2_score(y_valid, pred)
 
+        # график важности параметров
+
+        feature_importance = xgb_r.feature_importances_
+        sorted_idx = np.argsort(feature_importance)
+        fig = plt.figure(figsize=(12, 6))
+        plt.barh(range(len(sorted_idx)), feature_importance[sorted_idx], align='center')
+        plt.yticks(range(len(sorted_idx)), np.array(X_valid.columns)[sorted_idx])
+        plt.title('Feature Importance')
+        plt.show()
+
         print("RMSE : % f" % (rmse))
         print("R2 : % f" % (r2))
 
@@ -103,6 +124,16 @@ class Models:
         pred = regressor.predict(X_valid)
         rmse = np.sqrt(mean_squared_error(y_valid, pred))
         r2 = r2_score(y_valid, pred)
+
+        # график важности параметров
+
+        feature_importance = regressor.feature_importances_
+        sorted_idx = np.argsort(feature_importance)
+        fig = plt.figure(figsize=(12, 6))
+        plt.barh(range(len(sorted_idx)), feature_importance[sorted_idx], align='center')
+        plt.yticks(range(len(sorted_idx)), np.array(X_valid.columns)[sorted_idx])
+        plt.title('Feature Importance')
+        plt.show()
 
         print("RMSE : % f" % (rmse))
         print("R2 : % f" % (r2))
