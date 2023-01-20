@@ -32,12 +32,12 @@ y = preparation.nox_to_classes(y)
 X = np.array(x)
 y = np.array(y)
 
+train_x, valid_x, train_y, valid_y = train_test_split(X, y, test_size=0.3)
+
 
 def objective(trial):
-    train_x, valid_x, train_y, valid_y = train_test_split(X, y, test_size=0.3)
-
     param = {
-        'iterations': 1500,
+        'iterations': trial.suggest_int("iterations", 100, 1000, step=10),
         'learning_rate': trial.suggest_float("learning_rate", 0.01, 0.1),
         'depth': 2,
         'loss_function': 'MultiClass'
@@ -54,7 +54,7 @@ def objective(trial):
 
 
 study = optuna.create_study(direction="maximize")
-study.optimize(objective, n_trials=50, timeout=600)
+study.optimize(objective, n_trials=50)
 
 print("Number of finished trials: {}".format(len(study.trials)))
 
