@@ -34,22 +34,35 @@ data = preparation.delete_columns(['L1',
 print(data.info())
 print(data.isnull().sum())
 
+columns = ['Line Probe 8: Temperature (K)',
+           'Line Probe 8: Mass Fraction of Nitrogen Oxide Emission',
+           'Line Probe 8: Mass Fraction of CO',
+           'Line Probe 8: Mass Fraction of H2O']
+
+for i in columns:
+    print(f'---{i}---')
+    print('Mean--',data[i].mean())
+    print('Min--', data[i].min())
+    print('Max--', data[i].max())
+
+
+
 # sns.set()
 # ax = sns.heatmap(data.corr(), annot=True, fmt='.1f')
 # plt.show()
 
-data_temperature = preparation.delete_columns(['Line Probe 8: Mass Fraction of Nitrogen Oxide Emission',
-                                               'Line Probe 8: Mass Fraction of CO',
-                                               'Line Probe 8: Mass Fraction of H2O'], data)
-
-x = data_temperature.drop('Line Probe 8: Temperature (K)', axis=1)
-y = data_temperature['Line Probe 8: Temperature (K)']
-
-X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.25)
-
-models.cat_boost_regression(X_train, X_test, y_train, y_test)
-models.xg_boost_regression(X_train, X_test, y_train, y_test)
-models.random_forest_regression(X_train, X_test, y_train, y_test)
+# data_temperature = preparation.delete_columns(['Line Probe 8: Mass Fraction of Nitrogen Oxide Emission',
+#                                                'Line Probe 8: Mass Fraction of CO',
+#                                                'Line Probe 8: Mass Fraction of H2O'], data)
+#
+# x = data_temperature.drop('Line Probe 8: Temperature (K)', axis=1)
+# y = data_temperature['Line Probe 8: Temperature (K)']
+#
+# X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.25)
+#
+# models.cat_boost_regression(X_train, X_test, y_train, y_test)
+# models.xg_boost_regression(X_train, X_test, y_train, y_test)
+# models.random_forest_regression(X_train, X_test, y_train, y_test)
 
 # data_Nox = preparation.delete_columns(['Line Probe 8: Temperature (K)',
 #                                        'Line Probe 8: Mass Fraction of CO',

@@ -69,6 +69,7 @@ class Models:
         model.grid_search(grid, train_dataset)
 
         pred = model.predict(X_valid)
+        mse = mean_squared_error(y_valid, pred)
         rmse = (np.sqrt(mean_squared_error(y_valid, pred)))
         r2 = r2_score(y_valid, pred)
 
@@ -82,6 +83,7 @@ class Models:
         plt.title('Feature Importance')
         plt.show()
 
+        print("MSE : % f" % (mse))
         print("RMSE : % f" % (rmse))
         print("R2 : % f" % (r2))
 
@@ -99,6 +101,7 @@ class Models:
         pred = xgb_r.predict(X_valid)
 
         # RMSE Computation
+        mse = mean_squared_error(y_valid, pred)
         rmse = np.sqrt(mean_squared_error(y_valid, pred))
         r2 = r2_score(y_valid, pred)
 
@@ -112,6 +115,7 @@ class Models:
         plt.title('Feature Importance')
         plt.show()
 
+        print("MSE : % f" % (mse))
         print("RMSE : % f" % (rmse))
         print("R2 : % f" % (r2))
 
@@ -122,6 +126,8 @@ class Models:
         regressor = RandomForestRegressor(n_estimators=10, random_state=0)
         regressor.fit(X_train, y_train)
         pred = regressor.predict(X_valid)
+
+        mse = mean_squared_error(y_valid, pred)
         rmse = np.sqrt(mean_squared_error(y_valid, pred))
         r2 = r2_score(y_valid, pred)
 
@@ -135,6 +141,7 @@ class Models:
         plt.title('Feature Importance')
         plt.show()
 
+        print("MSE : % f" % (mse))
         print("RMSE : % f" % (rmse))
         print("R2 : % f" % (r2))
 
