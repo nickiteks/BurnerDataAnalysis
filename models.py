@@ -83,6 +83,7 @@ class Models:
         plt.title('Feature Importance')
         plt.show()
 
+        print('--CatBoost--')
         print("MSE : % f" % (mse))
         print("RMSE : % f" % (rmse))
         print("R2 : % f" % (r2))
@@ -92,7 +93,7 @@ class Models:
         Регрессия с помощью XgBOOST
         """
         xgb_r = XGBRegressor(objective='reg:squarederror',
-                             n_estimators=10, seed=123)
+                             n_estimators=1000, max_depth=7, eta=0.1, subsample=0.7, colsample_bytree=0.8)
 
         # Fitting the model
         xgb_r.fit(X_train, y_train)
@@ -115,6 +116,7 @@ class Models:
         plt.title('Feature Importance')
         plt.show()
 
+        print('--XGBoost--')
         print("MSE : % f" % (mse))
         print("RMSE : % f" % (rmse))
         print("R2 : % f" % (r2))
@@ -141,6 +143,7 @@ class Models:
         plt.title('Feature Importance')
         plt.show()
 
+        print('--RF--')
         print("MSE : % f" % (mse))
         print("RMSE : % f" % (rmse))
         print("R2 : % f" % (r2))
