@@ -2,6 +2,7 @@ import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
 import numpy as np
+from sklearn.cluster import KMeans
 
 data = pd.read_csv('csv/report.csv', delimiter=';', decimal=',')
 
@@ -24,4 +25,11 @@ for column in columns:
     sns_plot = sns.histplot(y)
     fig = sns_plot.get_figure()
     plt.show()
+
+# классификация
+
+x = data.copy()
+kmeans = KMeans(n_clusters=4, random_state=0, n_init="auto").fit_predict(x)
+
+print(kmeans)
 
