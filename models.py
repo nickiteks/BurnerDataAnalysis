@@ -53,12 +53,12 @@ class Models:
         print(accuracy_score(y_valid, pred))
         return accuracy_score(y_valid, pred)
 
-    def cat_boost_regression(self,X_train, X_valid, y_train, y_valid):
+    def cat_boost_regression(self, X_train, X_test, y_train, y_test):
         """
         Регрессия с помощью CatBOOST
         """
         train_dataset = Pool(X_train, y_train)
-        test_dataset = Pool(X_valid, y_valid)
+        test_dataset = Pool(X_test, y_test)
 
         model = CatBoostRegressor(loss_function='RMSE')
 
@@ -68,10 +68,10 @@ class Models:
                 'l2_leaf_reg': [0.2, 0.5, 1, 3]}
         model.grid_search(grid, train_dataset)
 
-        pred = model.predict(X_valid)
-        mse = mean_squared_error(y_valid, pred)
-        rmse = (np.sqrt(mean_squared_error(y_valid, pred)))
-        r2 = r2_score(y_valid, pred)
+        pred = model.predict(X_test)
+        mse = mean_squared_error(y_test, pred)
+        rmse = (np.sqrt(mean_squared_error(y_test, pred)))
+        r2 = r2_score(y_test, pred)
 
         # график важности параметров
 
@@ -79,7 +79,7 @@ class Models:
         sorted_idx = np.argsort(feature_importance)
         fig = plt.figure(figsize=(12, 6))
         plt.barh(range(len(sorted_idx)), feature_importance[sorted_idx], align='center')
-        plt.yticks(range(len(sorted_idx)), np.array(X_valid.columns)[sorted_idx])
+        plt.yticks(range(len(sorted_idx)), np.array(X_test.columns)[sorted_idx])
         plt.title('Feature Importance')
         plt.show()
 
