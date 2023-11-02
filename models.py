@@ -16,7 +16,7 @@ import shap
 
 class Models:
 
-    def cat_boost_classifier(self,X_train, X_valid, y_train, y_valid):
+    def cat_boost_classifier(self, X_train, X_valid, y_train, y_valid):
         """
         Классификация с помошью CatBOOST
         """
@@ -32,7 +32,7 @@ class Models:
         print(accuracy_score(y_valid, preds_class))
         return accuracy_score(y_valid, preds_class)
 
-    def xg_boost_classifer(self,X_train, X_valid, y_train, y_valid):
+    def xg_boost_classifer(self, X_train, X_valid, y_train, y_valid):
         """
         Классификация с помощью XgBOOST
         """
@@ -42,7 +42,7 @@ class Models:
         print(accuracy_score(y_valid, preds))
         return accuracy_score(y_valid, preds)
 
-    def random_forest_classifer(self,X_train, X_valid, y_train, y_valid):
+    def random_forest_classifer(self, X_train, X_valid, y_train, y_valid):
         """
         Классификация с помощью случайного леса
         """
@@ -62,11 +62,12 @@ class Models:
 
         model = CatBoostRegressor(loss_function='RMSE')
 
-        grid = {'iterations': [100, 150, 200],
-                'learning_rate': [0.03, 0.1],
-                'depth': [2, 4, 6, 8],
-                'l2_leaf_reg': [0.2, 0.5, 1, 3]}
+        grid = {'iterations': [100,200],
+                'learning_rate': [0.03, 0.1,0.01,0.05],
+                'depth': [10, 20,50,100, 500]}
         model.grid_search(grid, train_dataset)
+
+        y_test = np.array(y_test)
 
         pred = model.predict(X_test)
         mse = mean_squared_error(y_test, pred)
@@ -78,9 +79,10 @@ class Models:
         feature_importance = model.feature_importances_
         sorted_idx = np.argsort(feature_importance)
         fig = plt.figure(figsize=(12, 6))
-        plt.barh(range(len(sorted_idx)), feature_importance[sorted_idx], align='center')
-        plt.yticks(range(len(sorted_idx)), np.array(X_test.columns)[sorted_idx])
+        plt.bar(range(len(sorted_idx)), feature_importance[sorted_idx])
+        plt.xticks(range(len(sorted_idx)), np.array(X_test.columns)[sorted_idx],rotation=20,)
         plt.title('Feature Importance')
+        plt.gca().invert_xaxis()
         plt.show()
 
         print('--CatBoost--')
@@ -88,12 +90,25 @@ class Models:
         print("RMSE : % f" % (rmse))
         print("R2 : % f" % (r2))
 
-    def xg_boost_regression(self,X_train, X_valid, y_train, y_valid):
+        fig, ax = plt.subplots()
+        ax.plot(pred, color='g')
+        ax.plot(y_test, color='r')
+
+        ax.set(
+            title='prev vs test')
+        ax.grid()
+
+        plt.show()
+
+        print(pred)
+        print(y_test)
+
+    def xg_boost_regression(self, X_train, X_valid, y_train, y_valid):
         """
         Регрессия с помощью XgBOOST
         """
         xgb_r = XGBRegressor(objective='reg:squarederror',
-                             n_estimators=1000, max_depth=7, eta=0.1, subsample=0.7, colsample_bytree=0.8)
+                             n_estimators=1000, max_depth=25, eta=0.1, subsample=0.7, colsample_bytree=0.8)
 
         # Fitting the model
         xgb_r.fit(X_train, y_train)
@@ -121,7 +136,7 @@ class Models:
         print("RMSE : % f" % (rmse))
         print("R2 : % f" % (r2))
 
-    def random_forest_regression(self,X_train, X_valid, y_train, y_valid):
+    def random_forest_regression(self, X_train, X_valid, y_train, y_valid):
         """
         Регрессия с помощью случайного леса
         """
@@ -148,7 +163,7 @@ class Models:
         print("RMSE : % f" % (rmse))
         print("R2 : % f" % (r2))
 
-    def cat_boost_ROC(self,X_train, X_valid, y_train, y_valid):
+    def cat_boost_ROC(self, X_train, X_valid, y_train, y_valid):
         model = CatBoostClassifier(iterations=1500,
                                    learning_rate=0.1,
                                    depth=2,
@@ -177,7 +192,7 @@ class Models:
         plt.legend(loc="lower right")
         plt.show()
 
-    def xg_boost_ROC(self,X_train, X_valid, y_train, y_valid):
+    def xg_boost_ROC(self, X_train, X_valid, y_train, y_valid):
         model = XGBClassifier(n_estimators=2, max_depth=2, learning_rate=1, objective='multi:softprob')
         model.fit(X_train, y_train)
         pred = model.predict_proba(X_valid)
@@ -203,7 +218,7 @@ class Models:
         plt.legend(loc="lower right")
         plt.show()
 
-    def random_forest_ROC(self,X_train, X_valid, y_train, y_valid):
+    def random_forest_ROC(self, X_train, X_valid, y_train, y_valid):
         model = RandomForestClassifier(max_depth=2, random_state=0)
         model.fit(X_train, y_train)
         pred = model.predict_proba(X_valid)

@@ -51,18 +51,18 @@ for i in columns:
 # ax = sns.heatmap(data.corr(), annot=True, fmt='.1f')
 # plt.show()
 
-# data_temperature = preparation.delete_columns(['Line Probe 8: Mass Fraction of Nitrogen Oxide Emission',
-#                                                'Line Probe 8: Mass Fraction of CO',
-#                                                'Line Probe 8: Mass Fraction of H2O'], data)
-#
-# x = data_temperature.drop('Line Probe 8: Temperature (K)', axis=1)
-# y = data_temperature['Line Probe 8: Temperature (K)']
-#
-# X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.25)
-#
-# models.cat_boost_regression(X_train, X_test, y_train, y_test)
-# models.xg_boost_regression(X_train, X_test, y_train, y_test)
-# models.random_forest_regression(X_train, X_test, y_train, y_test)
+data_temperature = preparation.delete_columns(['Line Probe 8: Mass Fraction of Nitrogen Oxide Emission',
+                                               'Line Probe 8: Mass Fraction of CO',
+                                               'Line Probe 8: Mass Fraction of H2O'], data)
+
+x = data_temperature.drop('Line Probe 8: Temperature (K)', axis=1)
+y = data_temperature['Line Probe 8: Temperature (K)']
+
+X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.25)
+
+models.cat_boost_regression(X_train, X_test, y_train, y_test)
+models.xg_boost_regression(X_train, X_test, y_train, y_test)
+models.random_forest_regression(X_train, X_test, y_train, y_test)
 
 # data_Nox = preparation.delete_columns(['Line Probe 8: Temperature (K)',
 #                                        'Line Probe 8: Mass Fraction of CO',
@@ -102,3 +102,27 @@ for i in columns:
 # models.cat_boost_regression(X_train, X_test, y_train, y_test)
 # models.xg_boost_regression(X_train, X_test, y_train, y_test)
 # models.random_forest_regression(X_train, X_test, y_train, y_test)
+
+# model = CatBoostRegressor(loss_function='RMSE')
+#
+# train_dataset = Pool(x_learn,y_learn)
+#
+# grid = {'iterations': [100, 1200, 2000],
+#         'learning_rate': [0.03, 0.1, 0.01, 0.05],
+#         'depth': [10, 20, 50, 100, 500]}
+#
+# model.grid_search(grid, train_dataset)
+#
+# pred = model.predict(x.iloc[[970]])
+#
+#
+# print(pred)
+# print(y.iloc[[970]])
+#
+# feature_importance = model.feature_importances_
+# sorted_idx = np.argsort(feature_importance)
+# fig = plt.figure(figsize=(12, 6))
+# plt.barh(range(len(sorted_idx)), feature_importance[sorted_idx], align='center')
+# plt.yticks(range(len(sorted_idx)), np.array(x.columns)[sorted_idx])
+# plt.title('Feature Importance')
+# plt.show()

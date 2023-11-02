@@ -67,13 +67,13 @@ y = data['Nox, мг/м3']
 # standard scaler
 # x = preparation.standard_scaler(x)
 # # minMax scaler
-x = preparation.min_max_scaler(x)
+#x = preparation.min_max_scaler(x)
 # robust scaler
 # x = preprocessing.robust_scale(x)
 # quantile
 #x = preprocessing.quantile_transform(x)
 
-y = preparation.nox_to_classes(y)
+#y = preparation.nox_to_classes(y)
 
 # X_train, X_valid, y_train, y_valid = train_test_split(x, y, test_size=0.25)
 # models.cat_boost_ROC(X_train, X_valid, y_train, y_valid)

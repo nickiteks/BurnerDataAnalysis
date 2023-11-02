@@ -27,9 +27,9 @@ for column in columns:
     plt.show()
 
 # классификация
-
+#попробовать только входы выходы
 x = data.copy()
-kmeans = KMeans(n_clusters=4, random_state=0, n_init="auto").fit_predict(x)
+kmeans = KMeans(n_clusters=3, random_state=0, n_init="auto").fit_predict(x)
 
 print(kmeans)
 
